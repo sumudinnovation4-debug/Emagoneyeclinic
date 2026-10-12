@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book an Appointment — Emagon Eye Clinic</title>
+<meta name="description" content="Book your appointment at Emagon Eye Clinic, Abuja in under two minutes.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="antialiased">
+
+<div id="site-header"></div>
+
+<main id="main">
+  <section class="bg-sky-50">
+    <div class="max-w-3xl mx-auto px-5 sm:px-8 pt-14 pb-12 lg:pt-16 text-center">
+      <p class="text-sky-600 font-semibold text-sm mb-2">Book an Appointment</p>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">Let's find you a slot</h1>
+      <p class="mt-4 text-slate-600">Fill in your details below. New patients are registered automatically and can track everything from their patient dashboard.</p>
+    </div>
+  </section>
+
+  <section class="max-w-3xl mx-auto px-5 sm:px-8 py-12 lg:py-16">
+    <form id="book-form" class="rounded-3xl border border-slate-100 shadow-soft bg-white p-6 sm:p-10 space-y-7">
+
+      <div>
+        <h2 class="font-semibold text-ink mb-4 flex items-center gap-2"><i data-lucide="user" class="text-sky-500" style="width:18px;height:18px"></i>Your details</h2>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="bk-name" class="block text-sm font-medium text-ink mb-1.5">Full name</label>
+            <input id="bk-name" required type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none" placeholder="e.g. Chioma Eze">
+          </div>
+          <div>
+            <label for="bk-phone" class="block text-sm font-medium text-ink mb-1.5">Phone number</label>
+            <input id="bk-phone" required type="tel" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none" placeholder="0800 000 0000">
+          </div>
+        </div>
+        <div class="mt-5">
+          <label for="bk-email" class="block text-sm font-medium text-ink mb-1.5">Email address</label>
+          <input id="bk-email" required type="email" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none" placeholder="you@example.com">
+          <p class="text-xs text-slate-400 mt-1.5">We'll use this as your patient login — no password needed for this demo.</p>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-100 pt-7">
+        <h2 class="font-semibold text-ink mb-4 flex items-center gap-2"><i data-lucide="stethoscope" class="text-sky-500" style="width:18px;height:18px"></i>Appointment details</h2>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="bk-service" class="block text-sm font-medium text-ink mb-1.5">Service</label>
+            <select id="bk-service" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none bg-white"></select>
+          </div>
+          <div>
+            <label for="bk-doctor" class="block text-sm font-medium text-ink mb-1.5">Preferred doctor</label>
+            <select id="bk-doctor" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none bg-white"></select>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5 mt-5">
+          <div>
+            <label for="bk-date" class="block text-sm font-medium text-ink mb-1.5">Preferred date</label>
+            <input id="bk-date" required type="date" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none">
+          </div>
+          <div>
+            <label for="bk-time" class="block text-sm font-medium text-ink mb-1.5">Preferred time</label>
+            <select id="bk-time" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none bg-white">
+              <option value="09:00">9:00 AM</option>
+              <option value="10:00">10:00 AM</option>
+              <option value="11:00">11:00 AM</option>
+              <option value="12:00">12:00 PM</option>
+              <option value="13:00">1:00 PM</option>
+              <option value="14:00">2:00 PM</option>
+              <option value="15:00">3:00 PM</option>
+              <option value="16:00">4:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-5">
+          <label for="bk-notes" class="block text-sm font-medium text-ink mb-1.5">Anything we should know? <span class="text-slate-400 font-normal">(optional)</span></label>
+          <textarea id="bk-notes" rows="3" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none" placeholder="Symptoms, referrals, or questions for the doctor"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold px-7 py-3.5 rounded-2xl shadow-card transition-colors">
+        Confirm Booking <i data-lucide="check" style="width:18px;height:18px"></i>
+      </button>
+      <p class="text-xs text-center text-slate-400">By booking, you'll be signed in to your patient dashboard to track this appointment.</p>
+    </form>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/app.js"></script>
+<script src="js/components.js"></script>
+<script>
+  UI.renderPublicHeader('index');
+  UI.renderPublicFooter();
+
+  const params = new URLSearchParams(location.search);
+  const serviceSelect = document.getElementById('bk-service');
+  const doctorSelect = document.getElementById('bk-doctor');
+
+  EMAGON.Services.all().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.name; opt.textContent = `${s.name} — ${EMAGON.formatCurrency(s.price)}`;
+    if (params.get('service') && EMAGON.Services.byId(params.get('service'))?.name === s.name) opt.selected = true;
+    serviceSelect.appendChild(opt);
+  });
+  EMAGON.Doctors.all().forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.id; opt.textContent = `${d.name} — ${d.specialty}`;
+    if (params.get('doctor') === d.id) opt.selected = true;
+    doctorSelect.appendChild(opt);
+  });
+
+  const dateInput = document.getElementById('bk-date');
+  const today = new Date().toISOString().slice(0, 10);
+  dateInput.min = today;
+  dateInput.value = today;
+
+  document.getElementById('book-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('bk-name').value.trim();
+    const phone = document.getElementById('bk-phone').value.trim();
+    const email = document.getElementById('bk-email').value.trim();
+    const service = serviceSelect.value;
+    const doctorId = doctorSelect.value;
+    const doctor = EMAGON.Doctors.byId(doctorId);
+    const date = dateInput.value;
+    const time = document.getElementById('bk-time').value;
+    const notes = document.getElementById('bk-notes').value.trim();
+
+    const patient = EMAGON.Patients.upsertByEmail({ name, email, phone });
+
+    EMAGON.Appointments.add({
+      patientId: patient.id,
+      patientName: patient.name,
+      doctorId: doctor.id,
+      doctorName: doctor.name,
+      service, date, time, notes,
+      status: 'Pending'
+    });
+
+    EMAGON.login('patient', patient.name, patient.id);
+    EMAGON.toast('Appointment booked! Redirecting to your dashboard…', 'success');
+    setTimeout(() => { location.href = 'patient/dashboard.html'; }, 900);
+  });
+</script>
+</body>
+</html>
