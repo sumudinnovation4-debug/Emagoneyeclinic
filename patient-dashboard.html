@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-slate-50">
+<div id="site-header"></div>
+
+<script src="app.js"></script>
+<script src="components.js"></script>
+<script>
+  const session = EMAGON.requireAuth('patient', 'patient-login.html');
+</script>
+
+<template id="tpl"></template>
+
+<script>
+  if (session) {
+    UI.renderPatientPortal('dashboard', session);
+    const main = document.getElementById('main');
+    const patient = EMAGON.Patients.byId(session.id) || { name: session.name };
+    const appts = EMAGON.Appointments.byPatient(session.id).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    const upcoming = appts.filter(a => a.status !== 'Completed' && a.status !== 'Cancelled');
+    const nextAppt = upcoming[0];
+    const rx = EMAGON.Prescriptions.byPatient(session.id);
+    const bills = EMAGON.Bills.byPatient(session.id);
+    const unpaid = bills.filter(b => b.status === 'Unpaid');
+
+    const statusPill = (status) => {
+      const map = { Pending: ['#F59E0B', '#FEF3C7'], Confirmed: ['#0EA5E9', '#E0F2FE'], Completed: ['#16A34A', '#DCFCE7'], Cancelled: ['#DC2626', '#FEE2E2'] };
+      const [dot, bg] = map[status] || ['#64748b', '#F1F5F9'];
+      return `<span class="pill" style="background:${bg};color:${dot}"><span class="pill-dot" style="background:${dot}"></span>${status}</span>`;
+    };
+
+    main.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-2xl font-extrabold text-ink tracking-tight">Welcome back, ${patient.name.split(' ')[0]}</h1>
+          <p class="text-slate-500 text-sm mt-1">Here's what's happening with your eye care.</p>
+        </div>
+        <a href="book.html" class="inline-flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold px-5 py-2.5 rounded-2xl shadow-card transition-colors text-sm">
+          <i data-lucide="plus" style="width:16px;height:16px"></i>New Appointment
+        </a>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-5 mb-8">
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+          <span class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4"><i data-lucide="calendar-check" style="width:20px;height:20px"></i></span>
+          <p class="text-2xl font-extrabold text-ink">${upcoming.length}</p>
+          <p class="text-sm text-slate-500 mt-1">Upcoming appointments</p>
+        </div>
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+          <span class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4"><i data-lucide="clipboard-list" style="width:20px;height:20px"></i></span>
+          <p class="text-2xl font-extrabold text-ink">${rx.length}</p>
+          <p class="text-sm text-slate-500 mt-1">Prescriptions on file</p>
+        </div>
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+          <span class="w-11 h-11 rounded-2xl ${unpaid.length ? 'bg-amber-100 text-amber-600' : 'bg-sky-100 text-sky-600'} flex items-center justify-center mb-4"><i data-lucide="receipt" style="width:20px;height:20px"></i></span>
+          <p class="text-2xl font-extrabold text-ink">${unpaid.length}</p>
+          <p class="text-sm text-slate-500 mt-1">Unpaid bills</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-5 gap-6">
+        <div class="lg:col-span-3 rounded-3xl border border-slate-100 bg-white shadow-card p-6 sm:p-7">
+          <h2 class="font-semibold text-ink mb-4">Next appointment</h2>
+          ${nextAppt ? `
+            <div class="flex items-start gap-4">
+              <span class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-700 flex flex-col items-center justify-center shrink-0">
+                <span class="text-[10px] font-semibold uppercase">${new Date(nextAppt.date + 'T00:00:00').toLocaleDateString('en-GB',{month:'short'})}</span>
+                <span class="text-lg font-extrabold leading-none">${new Date(nextAppt.date + 'T00:00:00').getDate()}</span>
+              </span>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="font-semibold text-ink">${nextAppt.service}</p>
+                  ${statusPill(nextAppt.status)}
+                </div>
+                <p class="text-sm text-slate-500 mt-1">${nextAppt.doctorName} &middot; ${EMAGON.formatTime(nextAppt.time)}</p>
+              </div>
+            </div>` : `
+            <div class="text-center py-8">
+              <i data-lucide="calendar-plus" class="text-slate-300 mx-auto mb-3" style="width:36px;height:36px"></i>
+              <p class="text-sm text-slate-500">No upcoming appointments yet.</p>
+              <a href="book.html" class="text-sm font-semibold text-sky-700 hover:underline mt-2 inline-block">Book one now</a>
+            </div>`}
+          <a href="patient-appointments.html" class="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-700 hover:gap-2.5 transition-all mt-6">View all appointments <i data-lucide="arrow-right" style="width:14px;height:14px"></i></a>
+        </div>
+
+        <div class="lg:col-span-2 rounded-3xl border border-slate-100 bg-white shadow-card p-6 sm:p-7">
+          <h2 class="font-semibold text-ink mb-4">Quick actions</h2>
+          <div class="space-y-3">
+            <a href="book.html" class="flex items-center gap-3 rounded-2xl border border-slate-100 hover:border-sky-200 hover:bg-sky-50 px-4 py-3 transition-colors">
+              <i data-lucide="calendar-plus" class="text-sky-600" style="width:18px;height:18px"></i><span class="text-sm font-medium text-ink">Book new appointment</span>
+            </a>
+            <a href="patient-prescriptions.html" class="flex items-center gap-3 rounded-2xl border border-slate-100 hover:border-sky-200 hover:bg-sky-50 px-4 py-3 transition-colors">
+              <i data-lucide="clipboard-list" class="text-sky-600" style="width:18px;height:18px"></i><span class="text-sm font-medium text-ink">View prescriptions</span>
+            </a>
+            <a href="patient-bills.html" class="flex items-center gap-3 rounded-2xl border border-slate-100 hover:border-sky-200 hover:bg-sky-50 px-4 py-3 transition-colors">
+              <i data-lucide="receipt" class="text-sky-600" style="width:18px;height:18px"></i><span class="text-sm font-medium text-ink">Pay a bill</span>
+            </a>
+            <a href="patient-shop.html" class="flex items-center gap-3 rounded-2xl border border-slate-100 hover:border-sky-200 hover:bg-sky-50 px-4 py-3 transition-colors">
+              <i data-lucide="shopping-bag" class="text-sky-600" style="width:18px;height:18px"></i><span class="text-sm font-medium text-ink">Shop glasses</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    EMAGON.initIcons();
+  }
+</script>
+</body>
+</html>

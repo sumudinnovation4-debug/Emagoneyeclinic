@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-slate-50">
+<div id="site-header"></div>
+
+<script src="app.js"></script>
+<script src="components.js"></script>
+<script>
+  const session = EMAGON.requireAuth('admin', 'admin-login.html');
+
+  const STAFF = [
+    { name: 'Dr. Amara Okeke', role: 'Lead Consultant Ophthalmologist', dept: 'Surgical' },
+    { name: 'Dr. Chinedu Bassey', role: 'Consultant Ophthalmologist', dept: 'Medical Retina' },
+    { name: 'Dr. Fatima Suleiman', role: 'Paediatric Ophthalmologist', dept: 'Paediatrics' },
+    { name: 'Dr. Tunde Adigun', role: 'Optometrist', dept: 'Optical' },
+    { name: 'Ngozi Ike', role: 'Front Desk Coordinator', dept: 'Admin' },
+    { name: 'Samuel Etim', role: 'Theatre Nurse', dept: 'Surgical' },
+    { name: 'Blessing Danjuma', role: 'Optical Dispenser', dept: 'Optical' },
+    { name: 'Ibrahim Lawal', role: 'Billing Officer', dept: 'Finance' }
+  ];
+
+  function getInventory() {
+    const products = EMAGON.Products.all();
+    let inv = EMAGON.get('emagon_inventory', null);
+    if (!inv) {
+      inv = {};
+      products.forEach((p, i) => { inv[p.id] = 18 + ((i * 7) % 40); });
+      EMAGON.set('emagon_inventory', inv);
+    }
+    return inv;
+  }
+
+  if (session) {
+    UI.renderAdminPortal('dashboard', session);
+    const main = document.getElementById('main');
+    let activeTab = 'overview';
+
+    function statusPill(status) {
+      const map = { Pending: ['#B45309', '#FEF3C7'], Confirmed: ['#0369A1', '#E0F2FE'], Completed: ['#15803D', '#DCFCE7'], Cancelled: ['#B91C1C', '#FEE2E2'] };
+      const [c, bg] = map[status] || ['#334155', '#F1F5F9'];
+      return `<span class="pill" style="background:${bg};color:${c}"><span class="pill-dot" style="background:${c}"></span>${status}</span>`;
+    }
+
+    function revenueByMonth() {
+      const bills = EMAGON.Bills.all().filter(b => b.status === 'Paid');
+      const months = [];
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, label: d.toLocaleDateString('en-GB', { month: 'short' }) });
+      }
+      const totals = months.map(m => bills.filter(b => b.date.startsWith(m.key)).reduce((s, b) => s + b.amount, 0));
+      return { months, totals };
+    }
+
+    function renderChart() {
+      const { months, totals } = revenueByMonth();
+      const max = Math.max(...totals, 1);
+      return `
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6 sm:p-7">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-semibold text-ink">Revenue — last 6 months</h2>
+            <span class="text-xs text-slate-400">Paid invoices</span>
+          </div>
+          <div class="flex items-end gap-4 h-48">
+            ${months.map((m, i) => `
+              <div class="flex-1 flex flex-col items-center gap-2">
+                <span class="text-[11px] font-semibold text-slate-500">${totals[i] > 0 ? EMAGON.formatCurrency(totals[i]).replace('₦', '') : ''}</span>
+                <div class="w-full rounded-t-xl bg-sky-100 relative overflow-hidden" style="height:${Math.max((totals[i] / max) * 100, 3)}%">
+                  <div class="absolute inset-0 bg-gradient-to-t from-sky-500 to-sky-400 rounded-t-xl"></div>
+                </div>
+                <span class="text-xs text-slate-400">${m.label}</span>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    }
+
+    function renderOverview() {
+      const appts = EMAGON.Appointments.all();
+      const patients = EMAGON.Patients.all();
+      const paidBills = EMAGON.Bills.all().filter(b => b.status === 'Paid');
+      const totalRevenue = paidBills.reduce((s, b) => s + b.amount, 0);
+      const todayCount = appts.filter(a => a.date === new Date().toISOString().slice(0, 10)).length;
+      const pending = appts.filter(a => a.status === 'Pending').length;
+
+      return `
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
+          <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+            <span class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4"><i data-lucide="banknote" style="width:20px;height:20px"></i></span>
+            <p class="text-2xl font-extrabold text-ink">${EMAGON.formatCurrency(totalRevenue)}</p><p class="text-sm text-slate-500 mt-1">Total revenue collected</p>
+          </div>
+          <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+            <span class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4"><i data-lucide="calendar-days" style="width:20px;height:20px"></i></span>
+            <p class="text-2xl font-extrabold text-ink">${todayCount}</p><p class="text-sm text-slate-500 mt-1">Appointments today</p>
+          </div>
+          <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+            <span class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4"><i data-lucide="hourglass" style="width:20px;height:20px"></i></span>
+            <p class="text-2xl font-extrabold text-ink">${pending}</p><p class="text-sm text-slate-500 mt-1">Pending confirmation</p>
+          </div>
+          <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+            <span class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-4"><i data-lucide="users" style="width:20px;height:20px"></i></span>
+            <p class="text-2xl font-extrabold text-ink">${patients.length}</p><p class="text-sm text-slate-500 mt-1">Registered patients</p>
+          </div>
+        </div>
+        ${renderChart()}
+      `;
+    }
+
+    function renderAppointments() {
+      const appts = EMAGON.Appointments.all().sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+      return `
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card overflow-hidden">
+          <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Service</th><th>Status</th></tr></thead>
+            <tbody>
+              ${appts.map(a => `
+                <tr>
+                  <td class="whitespace-nowrap">${EMAGON.formatDate(a.date)} <span class="text-slate-400">${EMAGON.formatTime(a.time)}</span></td>
+                  <td class="font-medium text-ink">${a.patientName}</td>
+                  <td>${a.doctorName}</td>
+                  <td>${a.service}</td>
+                  <td>
+                    <select data-apt="${a.id}" class="status-select text-xs font-semibold rounded-full border-0 py-1.5 pl-2.5 pr-7 outline-none" style="background:${{Pending:'#FEF3C7',Confirmed:'#E0F2FE',Completed:'#DCFCE7',Cancelled:'#FEE2E2'}[a.status]};color:${{Pending:'#B45309',Confirmed:'#0369A1',Completed:'#15803D',Cancelled:'#B91C1C'}[a.status]}">
+                      ${['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => `<option value="${s}" ${s === a.status ? 'selected' : ''}>${s}</option>`).join('')}
+                    </select>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table></div>
+        </div>`;
+    }
+
+    function renderPatients() {
+      const patients = EMAGON.Patients.all();
+      return `
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card overflow-hidden">
+          <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Registered</th><th>Visits</th></tr></thead>
+            <tbody>
+              ${patients.map(p => `
+                <tr>
+                  <td class="font-medium text-ink">${p.name}</td>
+                  <td>${p.email}</td>
+                  <td>${p.phone || '—'}</td>
+                  <td class="whitespace-nowrap">${EMAGON.formatDate(p.createdAt ? p.createdAt.slice(0, 10) : '')}</td>
+                  <td>${EMAGON.Appointments.byPatient(p.id).length}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table></div>
+        </div>`;
+    }
+
+    function renderStaff() {
+      return `
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          ${STAFF.map(s => `
+            <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+              <span class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-semibold mb-4">${s.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</span>
+              <p class="font-semibold text-ink text-sm">${s.name}</p>
+              <p class="text-xs text-slate-500 mt-1">${s.role}</p>
+              <span class="inline-block mt-3 text-[11px] font-semibold text-sky-700 bg-sky-50 rounded-full px-2.5 py-1">${s.dept}</span>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    function renderInventory() {
+      const products = EMAGON.Products.all();
+      const inv = getInventory();
+      return `
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card overflow-hidden">
+          <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Item</th><th>Category</th><th>Unit price</th><th>Stock</th><th></th></tr></thead>
+            <tbody>
+              ${products.map(p => `
+                <tr>
+                  <td class="font-medium text-ink">${p.name}</td>
+                  <td>${p.category}</td>
+                  <td>${EMAGON.formatCurrency(p.price)}</td>
+                  <td><span class="pill" style="background:${inv[p.id] < 15 ? '#FEE2E2' : '#DCFCE7'};color:${inv[p.id] < 15 ? '#B91C1C' : '#15803D'}">${inv[p.id]} in stock</span></td>
+                  <td class="text-right"><button data-restock="${p.id}" class="text-xs font-semibold text-sky-700 hover:underline">+10 units</button></td>
+                </tr>`).join('')}
+            </tbody>
+          </table></div>
+        </div>`;
+    }
+
+    const TABS = [
+      { key: 'overview', label: 'Overview', icon: 'layout-dashboard', render: renderOverview },
+      { key: 'appointments', label: 'Appointments', icon: 'calendar-check', render: renderAppointments },
+      { key: 'patients', label: 'Patients', icon: 'users', render: renderPatients },
+      { key: 'staff', label: 'Staff', icon: 'id-card', render: renderStaff },
+      { key: 'inventory', label: 'Inventory', icon: 'package', render: renderInventory }
+    ];
+
+    function render() {
+      const tab = TABS.find(t => t.key === activeTab);
+      main.innerHTML = `
+        <div class="mb-6">
+          <h1 class="text-2xl font-extrabold text-ink tracking-tight">Admin Console</h1>
+          <p class="text-slate-500 text-sm mt-1">Full oversight of appointments, patients, staff and inventory.</p>
+        </div>
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-6" id="admin-tabs">
+          ${TABS.map(t => `<button data-tab="${t.key}" class="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-medium border transition-colors ${t.key === activeTab ? 'bg-ink border-ink text-white' : 'bg-white border-slate-200 text-slate-600'}"><i data-lucide="${t.icon}" style="width:15px;height:15px"></i>${t.label}</button>`).join('')}
+        </div>
+        <div id="admin-tab-content">${tab.render()}</div>
+      `;
+      main.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { activeTab = b.dataset.tab; render(); }));
+
+      main.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', () => {
+          EMAGON.Appointments.updateStatus(sel.dataset.apt, sel.value);
+          EMAGON.toast('Appointment status updated.', 'success');
+          render();
+        });
+      });
+      main.querySelectorAll('[data-restock]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const inv = getInventory();
+          inv[btn.dataset.restock] += 10;
+          EMAGON.set('emagon_inventory', inv);
+          EMAGON.toast('Stock updated.', 'success');
+          render();
+        });
+      });
+      EMAGON.initIcons();
+    }
+    render();
+  }
+</script>
+</body>
+</html>

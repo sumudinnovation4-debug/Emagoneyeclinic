@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-sky-50 min-h-screen flex items-center justify-center px-4 py-12">
+
+<div class="w-full max-w-md">
+  <a href="index.html" class="flex items-center justify-center gap-3 mb-8">
+    <span class="w-11 h-11 rounded-2xl bg-sky-500 text-white shadow-card flex items-center justify-center"><i data-lucide="shield" style="width:22px;height:22px"></i></span>
+    <span class="font-semibold text-ink">Emagon Eye Clinic</span>
+  </a>
+
+  <div class="bg-white rounded-3xl shadow-soft p-8 sm:p-9 text-center">
+    <span class="w-14 h-14 rounded-2xl bg-sky-700 text-white flex items-center justify-center mx-auto mb-5"><i data-lucide="layout-dashboard" style="width:26px;height:26px"></i></span>
+    <h1 class="text-2xl font-extrabold text-ink">Admin Console</h1>
+    <p class="text-sm text-slate-500 mt-2 mb-7">Full clinic oversight — appointments, patients, staff and inventory.</p>
+    <button id="admin-enter" class="w-full inline-flex items-center justify-center gap-2 bg-sky-700 hover:bg-sky-800 text-white font-semibold px-7 py-3.5 rounded-2xl shadow-card transition-colors">
+      Continue as Administrator <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+    </button>
+  </div>
+  <p class="text-center text-xs text-slate-400 mt-6">
+    <a href="patient-login.html" class="hover:text-sky-700">Patient Login</a> &middot; <a href="doctor-login.html" class="hover:text-sky-700">Doctor Login</a> &middot; <a href="index.html" class="hover:text-sky-700">Back to site</a>
+  </p>
+</div>
+
+<script src="app.js"></script>
+<script>
+  EMAGON.initIcons();
+  document.getElementById('admin-enter').addEventListener('click', () => {
+    EMAGON.login('admin', 'Admin', 'admin-001');
+    location.href = 'admin-dashboard.html';
+  });
+</script>
+</body>
+</html>

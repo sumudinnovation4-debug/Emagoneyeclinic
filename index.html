@@ -9,9 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="js/tailwind-config.js"></script>
+<script src="tailwind-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
-<link rel="stylesheet" href="css/style.css">
+<script src="images.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased">
 
@@ -50,6 +51,7 @@
           <i data-lucide="eye" class="text-sky-400" style="width:120px;height:120px"></i>
           <img src="https://images.unsplash.com/photo-1576210117723-cd06449a467d?auto=format&fit=crop&w=1000&q=75" alt="Patient having an eye test" class="absolute inset-0 w-full h-full object-cover" decoding="async" onerror="this.remove()">
         </div>
+        <div class="hidden sm:block absolute -top-6 -right-4 w-36 h-36"><div class="photo w-full h-full rounded-3xl border-4 border-white shadow-soft bg-sky-100"><script>document.currentScript.insertAdjacentHTML('afterend', IMG.tag('eyeBlue','Close-up of a healthy blue eye',400));</script></div></div>
         <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-soft px-5 py-4 flex items-center gap-3 max-w-[220px]">
           <span class="w-11 h-11 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0"><i data-lucide="shield-check" style="width:20px;height:20px"></i></span>
           <div>
@@ -126,6 +128,7 @@
         </div>
       </div>
       <div class="grid grid-cols-2 gap-5">
+        <div class="col-span-2 photo aspect-[16/8] rounded-3xl bg-sky-200 shadow-card"><script>document.currentScript.insertAdjacentHTML('afterend', IMG.tag('optom2','Optometrist examining a patient with modern equipment',900));</script></div>
         <div class="rounded-3xl bg-white shadow-card p-6 flex flex-col items-start gap-3">
           <i data-lucide="users" class="text-sky-500" style="width:26px;height:26px"></i>
           <p class="font-semibold text-ink text-sm">Family-friendly clinic with a dedicated children's eye unit</p>
@@ -144,6 +147,16 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="max-w-7xl mx-auto px-5 sm:px-8 pt-20 lg:pt-28">
+    <div class="max-w-xl mb-10">
+      <p class="text-sky-600 font-semibold text-sm mb-2">Inside the Clinic</p>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">Technology and care you can see</h2>
+      <p class="mt-4 text-slate-600">A look at the diagnostics, treatment rooms and optical studio patients visit every day.</p>
+    </div>
+    <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] sm:auto-rows-[180px] gap-3 sm:gap-4"></div>
   </section>
 
   <!-- LEAD DOCTOR -->
@@ -191,30 +204,47 @@
 
   <!-- CTA -->
   <section class="max-w-7xl mx-auto px-5 sm:px-8 py-20 lg:py-24">
-    <div class="rounded-3xl bg-gradient-to-br from-sky-500 to-sky-700 px-8 sm:px-14 py-14 sm:py-16 text-center shadow-soft">
+    <div class="photo rounded-3xl bg-gradient-to-br from-sky-500 to-sky-700 px-8 sm:px-14 py-14 sm:py-16 text-center shadow-soft">
+      <script>document.currentScript.insertAdjacentHTML('afterend', IMG.tag('eyeGold','',1400,'opacity-25 mix-blend-luminosity'));</script>
+      <div class="relative">
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Ready to see clearly again?</h2>
       <p class="text-sky-50 mt-4 max-w-xl mx-auto">Book a consultation with one of our specialists today — same-week appointments available.</p>
       <a href="book.html" class="inline-flex items-center gap-2 mt-8 bg-white text-sky-700 font-semibold px-8 py-3.5 rounded-2xl shadow-card hover:bg-sky-50 transition-colors">
         Book Your Appointment <i data-lucide="arrow-right" style="width:18px;height:18px"></i>
       </a>
+      </div>
     </div>
   </section>
 </main>
 
 <div id="site-footer"></div>
 
-<script src="js/app.js"></script>
-<script src="js/components.js"></script>
+<script src="app.js"></script>
+<script src="components.js"></script>
 <script>
   UI.renderPublicHeader('index');
   UI.renderPublicFooter();
 
+  const shots = [
+    ['phoropter','Eye exam with a phoropter',1000,'col-span-2 row-span-2'],
+    ['eyeMacro','Close-up of a human eye',600,''],
+    ['chart','Eye chart on a clinic wall',600,''],
+    ['machine','Eye testing machine',600,'row-span-2'],
+    ['shop','Optical shop shelves of eyeglasses',800,'col-span-2'],
+    ['kid3','Child trying on glasses',600,''],
+    ['microscope','Slit-lamp microscope',600,''],
+    ['surgery','Surgical team in theatre',800,'col-span-2'],
+    ['glassesCase','Prescription glasses',600,''],
+    ['eyeGreen','Macro of a green iris',600,'']
+  ];
+  document.getElementById('gallery').innerHTML = shots.map(([k,alt,w,c]) => `<div class="photo rounded-3xl bg-sky-100 shadow-card ${c}">${IMG.tag(k,alt,w,'hover:scale-105 transition-transform duration-500')}</div>`).join('');
+
   const grid = document.getElementById('home-services-grid');
   EMAGON.Services.all().slice(0, 4).forEach(s => {
     const card = document.createElement('div');
-    card.className = 'rounded-3xl border border-slate-100 bg-white shadow-card p-6 hover:-translate-y-1 transition-transform';
+    card.className = 'rounded-3xl border border-slate-100 bg-white shadow-card p-4 pb-6 hover:-translate-y-1 transition-transform';
     card.innerHTML = `
-      <span class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mb-5"><i data-lucide="${s.icon}" style="width:22px;height:22px"></i></span>
+      <div class="photo aspect-[4/3] rounded-2xl bg-sky-100 flex items-center justify-center mb-5"><i data-lucide="${s.icon}" class="text-sky-400" style="width:28px;height:28px"></i>${IMG.tag(IMG.SERVICE[s.id], s.name, 600)}</div>
       <h3 class="font-semibold text-ink">${s.name}</h3>
       <p class="text-sm text-slate-500 mt-2 leading-relaxed">${s.desc}</p>
       <p class="text-sm font-semibold text-sky-600 mt-4">From ${EMAGON.formatCurrency(s.price)}</p>`;

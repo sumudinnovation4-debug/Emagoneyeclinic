@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-slate-50">
+<div id="site-header"></div>
+
+<script src="app.js"></script>
+<script src="components.js"></script>
+<script>
+  const session = EMAGON.requireAuth('patient', 'patient-login.html');
+  if (session) {
+    UI.renderPatientPortal('bills', session);
+    const main = document.getElementById('main');
+
+    function render() {
+      const bills = EMAGON.Bills.byPatient(session.id);
+      const outstanding = bills.filter(b => b.status === 'Unpaid').reduce((s, b) => s + b.amount, 0);
+
+      main.innerHTML = `
+        <div class="mb-6">
+          <h1 class="text-2xl font-extrabold text-ink tracking-tight">Billing</h1>
+          <p class="text-slate-500 text-sm mt-1">Your invoices and payment history.</p>
+        </div>
+
+        <div class="rounded-3xl bg-gradient-to-br from-sky-500 to-sky-700 text-white shadow-soft p-6 sm:p-8 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p class="text-sky-100 text-sm">Outstanding balance</p>
+            <p class="text-3xl font-extrabold mt-1">${EMAGON.formatCurrency(outstanding)}</p>
+          </div>
+          <i data-lucide="wallet" style="width:36px;height:36px" class="opacity-70"></i>
+        </div>
+
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card overflow-hidden">
+          ${bills.length === 0 ? `<div class="p-10 text-center"><i data-lucide="receipt" class="text-slate-300 mx-auto mb-3" style="width:36px;height:36px"></i><p class="text-sm text-slate-500">No bills yet.</p></div>` : `
+          <div class="data-table-wrap"><table class="data-table">
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              ${bills.map(b => `
+                <tr>
+                  <td class="whitespace-nowrap">${EMAGON.formatDate(b.date)}</td>
+                  <td class="font-medium text-ink">${b.description}</td>
+                  <td>${EMAGON.formatCurrency(b.amount)}</td>
+                  <td>${b.status === 'Paid' ? `<span class="pill" style="background:#DCFCE7;color:#15803D"><span class="pill-dot" style="background:#15803D"></span>Paid</span>` : `<span class="pill" style="background:#FEF3C7;color:#B45309"><span class="pill-dot" style="background:#B45309"></span>Unpaid</span>`}</td>
+                  <td class="text-right">${b.status === 'Unpaid' ? `<button data-pay="${b.id}" class="text-xs font-semibold bg-sky-500 hover:bg-sky-600 text-white rounded-full px-3.5 py-1.5">Pay Now</button>` : ''}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table></div>`}
+        </div>
+      `;
+      main.querySelectorAll('[data-pay]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.textContent = 'Processing…';
+          btn.disabled = true;
+          setTimeout(() => {
+            EMAGON.Bills.markPaid(btn.dataset.pay);
+            EMAGON.toast('Payment successful (demo). Thank you!', 'success');
+            render();
+          }, 900);
+        });
+      });
+      EMAGON.initIcons();
+    }
+    render();
+  }
+</script>
+</body>
+</html>

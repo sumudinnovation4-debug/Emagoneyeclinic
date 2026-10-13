@@ -9,9 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="js/tailwind-config.js"></script>
+<script src="tailwind-config.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
-<link rel="stylesheet" href="css/style.css">
+<script src="images.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased">
 
@@ -23,6 +24,7 @@
       <p class="text-sky-600 font-semibold text-sm mb-2">Our Services</p>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-ink max-w-2xl">Comprehensive eye care, all in one clinic</h1>
       <p class="mt-5 text-lg text-slate-600 max-w-xl">Every service below is delivered by fellowship-trained ophthalmologists and optometrists using modern diagnostic equipment.</p>
+      <div class="photo mt-10 aspect-[21/8] rounded-3xl bg-sky-200 shadow-soft"><script>document.currentScript.insertAdjacentHTML('afterend', IMG.tag('neon','Eye exams neon sign',1600));</script></div>
     </div>
   </section>
 
@@ -45,8 +47,8 @@
 
 <div id="site-footer"></div>
 
-<script src="js/app.js"></script>
-<script src="js/components.js"></script>
+<script src="app.js"></script>
+<script src="components.js"></script>
 <script>
   UI.renderPublicHeader('services');
   UI.renderPublicFooter();
@@ -54,15 +56,15 @@
   const list = document.getElementById('services-list');
   EMAGON.Services.all().forEach(s => {
     const row = document.createElement('div');
-    row.className = 'rounded-3xl border border-slate-100 bg-white shadow-card p-6 sm:p-8 grid sm:grid-cols-[auto_1fr_auto] gap-5 sm:items-center';
+    row.className = 'rounded-3xl border border-slate-100 bg-white shadow-card p-4 sm:p-5 grid sm:grid-cols-[200px_1fr_auto] gap-5 sm:items-center overflow-hidden';
     row.innerHTML = `
-      <span class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0"><i data-lucide="${s.icon}" style="width:26px;height:26px"></i></span>
+      <div class="photo aspect-[16/10] sm:aspect-[4/3] rounded-2xl bg-sky-100 text-sky-500 flex items-center justify-center"><i data-lucide="${s.icon}" style="width:30px;height:30px"></i>${IMG.tag(IMG.SERVICE[s.id], s.name, 500)}</div>
       <div>
         <h3 class="font-semibold text-ink text-lg">${s.name}</h3>
         <p class="text-sm text-slate-500 mt-1.5 leading-relaxed max-w-xl">${s.desc}</p>
         <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5"><i data-lucide="clock" style="width:13px;height:13px"></i>${s.duration}</p>
       </div>
-      <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3 sm:gap-2 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+      <div class="flex sm:flex-col items-center sm:items-end justify-between gap-3 sm:gap-2 pt-4 sm:pt-0 sm:pr-4 border-t sm:border-t-0 border-slate-100">
         <p class="font-bold text-ink text-lg">${EMAGON.formatCurrency(s.price)}</p>
         <a href="book.html?service=${s.id}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-700 hover:gap-2.5 transition-all whitespace-nowrap">Book now <i data-lucide="arrow-right" style="width:14px;height:14px"></i></a>
       </div>`;

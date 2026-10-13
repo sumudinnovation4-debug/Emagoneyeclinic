@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Glasses — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<script src="images.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-slate-50">
+<div id="site-header"></div>
+
+<script src="app.js"></script>
+<script src="components.js"></script>
+<script>
+  const session = EMAGON.requireAuth('patient', 'patient-login.html');
+
+  if (session) {
+    UI.renderPatientPortal('shop', session);
+    const main = document.getElementById('main');
+
+    const categories = ['All', ...new Set(EMAGON.Products.all().map(p => p.category))];
+    let activeCategory = 'All';
+
+    main.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 class="text-2xl font-extrabold text-ink tracking-tight">Shop Glasses &amp; Lenses</h1>
+          <p class="text-slate-500 text-sm mt-1">Order frames, sunglasses and contact lenses for pickup or delivery.</p>
+        </div>
+        <button id="cart-toggle" class="relative inline-flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm font-semibold text-ink shadow-card">
+          <i data-lucide="shopping-cart" style="width:16px;height:16px"></i>Cart
+          <span id="cart-count" class="bg-sky-500 text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+      <div id="category-tabs" class="flex gap-2 overflow-x-auto pb-2 mb-6"></div>
+
+      <div class="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
+        <div id="product-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+
+        <aside id="cart-panel" class="hidden lg:block sticky top-6 rounded-3xl border border-slate-100 bg-white shadow-card p-6">
+          <h2 class="font-semibold text-ink mb-4 flex items-center gap-2"><i data-lucide="shopping-cart" style="width:18px;height:18px"></i>Your Cart</h2>
+          <div id="cart-items" class="space-y-4 max-h-[340px] overflow-y-auto pr-1"></div>
+          <div id="cart-empty" class="hidden text-center py-8"><i data-lucide="shopping-bag" class="text-slate-300 mx-auto mb-2" style="width:30px;height:30px"></i><p class="text-sm text-slate-400">Your cart is empty</p></div>
+          <div class="border-t border-slate-100 mt-4 pt-4 flex items-center justify-between">
+            <span class="text-sm text-slate-500">Total</span>
+            <span id="cart-total" class="text-lg font-extrabold text-ink">₦0</span>
+          </div>
+          <button id="checkout-btn" class="w-full mt-4 inline-flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-40 disabled:pointer-events-none text-white font-semibold px-6 py-3 rounded-2xl shadow-card transition-colors">
+            <i data-lucide="credit-card" style="width:16px;height:16px"></i>Checkout with Paystack
+          </button>
+        </aside>
+      </div>
+
+      <!-- mobile cart drawer -->
+      <div id="mobile-cart-backdrop" class="hidden lg:hidden fixed inset-0 bg-black/40 z-50"></div>
+      <div id="mobile-cart-drawer" class="hidden lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-soft p-6 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-ink flex items-center gap-2"><i data-lucide="shopping-cart" style="width:18px;height:18px"></i>Your Cart</h2>
+          <button id="mobile-cart-close" class="p-1.5 text-slate-400"><i data-lucide="x" style="width:20px;height:20px"></i></button>
+        </div>
+        <div id="cart-items-mobile" class="space-y-4"></div>
+        <div id="cart-empty-mobile" class="hidden text-center py-8"><i data-lucide="shopping-bag" class="text-slate-300 mx-auto mb-2" style="width:30px;height:30px"></i><p class="text-sm text-slate-400">Your cart is empty</p></div>
+        <div class="border-t border-slate-100 mt-4 pt-4 flex items-center justify-between">
+          <span class="text-sm text-slate-500">Total</span>
+          <span id="cart-total-mobile" class="text-lg font-extrabold text-ink">₦0</span>
+        </div>
+        <button id="checkout-btn-mobile" class="w-full mt-4 inline-flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-40 disabled:pointer-events-none text-white font-semibold px-6 py-3 rounded-2xl shadow-card">
+          <i data-lucide="credit-card" style="width:16px;height:16px"></i>Checkout with Paystack
+        </button>
+      </div>
+
+      <!-- Paystack demo modal -->
+      <div id="paystack-modal" class="hidden fixed inset-0 z-[60] bg-black/50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl shadow-soft max-w-sm w-full p-7">
+          <div id="paystack-body">
+            <div class="flex items-center gap-2 mb-5">
+              <span class="w-8 h-8 rounded-lg bg-ink text-white flex items-center justify-center text-xs font-bold">P</span>
+              <span class="font-semibold text-ink">Paystack Checkout <span class="text-xs font-normal text-slate-400">(demo)</span></span>
+            </div>
+            <p class="text-sm text-slate-500 mb-1">Amount to pay</p>
+            <p id="paystack-amount" class="text-2xl font-extrabold text-ink mb-5">₦0</p>
+            <label class="block text-sm font-medium text-ink mb-1.5">Card number</label>
+            <input value="4084 0840 8408 4081" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm mb-4">
+            <div class="grid grid-cols-2 gap-3 mb-6">
+              <div><label class="block text-sm font-medium text-ink mb-1.5">Expiry</label><input value="12/29" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"></div>
+              <div><label class="block text-sm font-medium text-ink mb-1.5">CVV</label><input value="408" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"></div>
+            </div>
+            <button id="paystack-pay" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold px-6 py-3 rounded-2xl">Pay Now</button>
+            <button id="paystack-cancel" class="w-full text-center text-sm text-slate-400 mt-3">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // ---- product grid ----
+    const tabsEl = document.getElementById('category-tabs');
+    function renderTabs() {
+      tabsEl.innerHTML = categories.map(c => `<button data-cat="${c}" class="shrink-0 px-4 py-2 rounded-2xl text-sm font-medium border transition-colors ${c === activeCategory ? 'bg-sky-500 border-sky-500 text-white' : 'bg-white border-slate-200 text-slate-600'}">${c}</button>`).join('');
+      tabsEl.querySelectorAll('[data-cat]').forEach(b => b.addEventListener('click', () => { activeCategory = b.dataset.cat; renderTabs(); renderGrid(); }));
+    }
+    const PRODUCT_IMG = IMG.PRODUCT;
+    const grid = document.getElementById('product-grid');
+    function renderGrid() {
+      const items = EMAGON.Products.all().filter(p => activeCategory === 'All' || p.category === activeCategory);
+      grid.innerHTML = items.map(p => `
+        <div class="rounded-3xl border border-slate-100 bg-white shadow-card p-5 flex flex-col">
+          <div class="photo aspect-square rounded-2xl bg-sky-50 flex items-center justify-center mb-4"><i data-lucide="${p.icon}" class="text-sky-400" style="width:44px;height:44px"></i>${PRODUCT_IMG[p.id] ? IMG.tag(PRODUCT_IMG[p.id], p.name, 600) : ''}</div>
+          <p class="text-xs text-sky-600 font-semibold">${p.category}</p>
+          <h3 class="font-semibold text-ink mt-1">${p.name}</h3>
+          <p class="text-xs text-slate-500 mt-1.5 leading-relaxed flex-1">${p.desc}</p>
+          <div class="flex items-center justify-between mt-4">
+            <span class="font-bold text-ink">${EMAGON.formatCurrency(p.price)}</span>
+            <button data-add="${p.id}" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-sky-500 hover:bg-sky-600 text-white rounded-full px-3.5 py-2"><i data-lucide="plus" style="width:13px;height:13px"></i>Add</button>
+          </div>
+        </div>`).join('');
+      grid.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => { EMAGON.Cart.add(b.dataset.add, 1); EMAGON.toast('Added to cart', 'success'); renderCart(); }));
+      EMAGON.initIcons();
+    }
+
+    // ---- cart ----
+    function cartLineHtml(line) {
+      const p = EMAGON.Products.byId(line.productId);
+      if (!p) return '';
+      return `
+        <div class="flex items-center gap-3">
+          <span class="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center shrink-0"><i data-lucide="${p.icon}" class="text-sky-400" style="width:20px;height:20px"></i></span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-ink truncate">${p.name}</p>
+            <p class="text-xs text-slate-400">${EMAGON.formatCurrency(p.price)}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button data-dec="${p.id}" class="w-6 h-6 rounded-full border border-slate-200 text-slate-500 flex items-center justify-center text-sm">−</button>
+            <span class="text-sm w-4 text-center">${line.qty}</span>
+            <button data-inc="${p.id}" class="w-6 h-6 rounded-full border border-slate-200 text-slate-500 flex items-center justify-center text-sm">+</button>
+          </div>
+        </div>`;
+    }
+
+    function renderCart() {
+      const cart = EMAGON.Cart.get();
+      const total = EMAGON.Cart.total();
+      const count = EMAGON.Cart.count();
+      [document.getElementById('cart-count')].forEach(el => el.textContent = count);
+      ['cart-total', 'cart-total-mobile'].forEach(id => document.getElementById(id).textContent = EMAGON.formatCurrency(total));
+      ['checkout-btn', 'checkout-btn-mobile'].forEach(id => document.getElementById(id).disabled = cart.length === 0);
+
+      const html = cart.map(cartLineHtml).join('');
+      document.getElementById('cart-items').innerHTML = html;
+      document.getElementById('cart-items-mobile').innerHTML = html;
+      document.getElementById('cart-empty').classList.toggle('hidden', cart.length > 0);
+      document.getElementById('cart-empty-mobile').classList.toggle('hidden', cart.length > 0);
+
+      document.querySelectorAll('[data-inc]').forEach(b => b.addEventListener('click', () => { const l = EMAGON.Cart.get().find(c => c.productId === b.dataset.inc); EMAGON.Cart.setQty(b.dataset.inc, l.qty + 1); renderCart(); }));
+      document.querySelectorAll('[data-dec]').forEach(b => b.addEventListener('click', () => { const l = EMAGON.Cart.get().find(c => c.productId === b.dataset.dec); EMAGON.Cart.setQty(b.dataset.dec, l.qty - 1); renderCart(); }));
+      EMAGON.initIcons();
+    }
+
+    // ---- mobile drawer ----
+    const backdrop = document.getElementById('mobile-cart-backdrop');
+    const drawer = document.getElementById('mobile-cart-drawer');
+    function openDrawer() { backdrop.classList.remove('hidden'); drawer.classList.remove('hidden'); }
+    function closeDrawer() { backdrop.classList.add('hidden'); drawer.classList.add('hidden'); }
+    document.getElementById('cart-toggle').addEventListener('click', () => { if (window.innerWidth < 1024) openDrawer(); else document.getElementById('cart-panel').scrollIntoView({ behavior: 'smooth' }); });
+    backdrop.addEventListener('click', closeDrawer);
+    document.getElementById('mobile-cart-close').addEventListener('click', closeDrawer);
+
+    // ---- checkout / paystack demo ----
+    const modal = document.getElementById('paystack-modal');
+    function openCheckout() {
+      if (EMAGON.Cart.get().length === 0) return;
+      document.getElementById('paystack-amount').textContent = EMAGON.formatCurrency(EMAGON.Cart.total());
+      modal.classList.remove('hidden');
+    }
+    document.getElementById('checkout-btn').addEventListener('click', openCheckout);
+    document.getElementById('checkout-btn-mobile').addEventListener('click', () => { closeDrawer(); openCheckout(); });
+    document.getElementById('paystack-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+    document.getElementById('paystack-pay').addEventListener('click', () => {
+      const body = document.getElementById('paystack-body');
+      body.innerHTML = `<div class="text-center py-6"><div class="w-10 h-10 mx-auto border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div><p class="text-sm text-slate-500 mt-4">Processing payment…</p></div>`;
+      setTimeout(() => {
+        const cart = EMAGON.Cart.get();
+        const items = cart.map(c => { const p = EMAGON.Products.byId(c.productId); return { productId: p.id, name: p.name, price: p.price, qty: c.qty }; });
+        const total = EMAGON.Cart.total();
+        const order = EMAGON.Orders.add({ patientId: session.id, items, total, status: 'Processing', address: 'Patient pickup — Emagon Eye Clinic, Maitama' });
+        EMAGON.Bills.add({ patientId: session.id, description: `Glasses order ${order.id}`, amount: total, status: 'Paid' });
+        EMAGON.Cart.clear();
+        body.innerHTML = `<div class="text-center py-4">
+          <span class="w-14 h-14 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4"><i data-lucide="check" style="width:26px;height:26px"></i></span>
+          <p class="font-semibold text-ink">Payment successful</p>
+          <p class="text-sm text-slate-500 mt-1">Order ${order.id} is being prepared. You'll be notified when it's ready for pickup.</p>
+          <button id="paystack-done" class="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white font-semibold px-6 py-3 rounded-2xl">Done</button>
+        </div>`;
+        EMAGON.initIcons();
+        document.getElementById('paystack-done').addEventListener('click', () => { modal.classList.add('hidden'); renderCart(); renderGrid(); });
+      }, 1400);
+    });
+
+    renderTabs();
+    renderGrid();
+    renderCart();
+    EMAGON.initIcons();
+  }
+</script>
+</body>
+</html>

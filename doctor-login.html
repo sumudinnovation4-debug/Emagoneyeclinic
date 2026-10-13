@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Login — Emagon Eye Clinic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased bg-sky-50 min-h-screen flex items-center justify-center px-4 py-12">
+
+<div class="w-full max-w-md">
+  <a href="index.html" class="flex items-center justify-center gap-3 mb-8">
+    <span class="w-11 h-11 rounded-2xl bg-sky-700 text-white shadow-card flex items-center justify-center"><i data-lucide="stethoscope" style="width:22px;height:22px"></i></span>
+    <span class="font-semibold text-ink">Emagon Eye Clinic</span>
+  </a>
+
+  <div class="bg-white rounded-3xl shadow-soft p-8 sm:p-9">
+    <h1 class="text-2xl font-extrabold text-ink text-center">Doctor Portal</h1>
+    <p class="text-sm text-slate-500 text-center mt-2 mb-7">Select your name to sign in to today's queue.</p>
+
+    <div id="doctor-list" class="space-y-3"></div>
+  </div>
+  <p class="text-center text-xs text-slate-400 mt-6">
+    <a href="patient-login.html" class="hover:text-slate-600">Patient Login</a> &middot; <a href="admin-login.html" class="hover:text-slate-600">Admin Login</a> &middot; <a href="index.html" class="hover:text-slate-600">Back to site</a>
+  </p>
+</div>
+
+<script src="app.js"></script>
+<script>
+  EMAGON.initIcons();
+  const list = document.getElementById('doctor-list');
+  EMAGON.Doctors.all().forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'w-full flex items-center gap-3 border border-slate-200 hover:border-sky-300 hover:bg-sky-50 rounded-2xl px-4 py-3 text-left transition-colors';
+    btn.innerHTML = `
+      <span class="w-10 h-10 rounded-full text-white flex items-center justify-center text-sm font-semibold shrink-0" style="background:${d.photoBg}">${d.initials}</span>
+      <span>
+        <span class="block text-sm font-semibold text-ink">${d.name}</span>
+        <span class="block text-xs text-slate-500">${d.specialty}</span>
+      </span>`;
+    btn.addEventListener('click', () => {
+      EMAGON.login('doctor', d.name, d.id);
+      location.href = 'doctor-dashboard.html';
+    });
+    list.appendChild(btn);
+  });
+</script>
+</body>
+</html>
