@@ -8,15 +8,25 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2220%22 font-size=%2220%22>👁️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="tailwind-config.js"></script>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <script src="images.js"></script>
+<script>window.IMG=window.IMG||{tag:function(){return ""},url:function(){return ""},SERVICE:{},PRODUCT:{}};</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased">
 
-<div id="site-header"></div>
+<div id="site-header"><header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-3"><span class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-sky-500 text-white font-bold">E</span><span class="font-semibold text-ink text-[15px]">Emagon Eye Clinic</span></a>
+        <nav class="hidden lg:flex items-center gap-8" aria-label="Primary"><a href="index.html" class="text-sm text-sky-700 font-semibold hover:text-sky-700">Home</a><a href="services.html" class="text-sm text-slate-600 hover:text-sky-700">Services</a><a href="doctors.html" class="text-sm text-slate-600 hover:text-sky-700">Doctors</a><a href="about.html" class="text-sm text-slate-600 hover:text-sky-700">About</a><a href="contact.html" class="text-sm text-slate-600 hover:text-sky-700">Contact</a></nav>
+        <div class="hidden lg:flex items-center gap-3"><a href="patient-login.html" class="text-sm font-medium text-slate-600 px-3 py-2">Patient Login</a><a href="book.html" class="bg-sky-500 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl">Book Appointment</a></div>
+        <button type="button" class="lg:hidden p-2 -mr-2 rounded-xl text-slate-700 text-2xl leading-none" aria-label="Open menu" onclick="document.getElementById('fb-menu').classList.toggle('hidden')">&#9776;</button>
+      </div>
+      <div id="fb-menu" class="lg:hidden hidden border-t border-slate-100 bg-white px-4 pb-4"><nav class="pt-2 flex flex-col gap-1"><a href="index.html" class="block py-3 px-4 rounded-xl text-base bg-sky-50 text-sky-700 font-semibold">Home</a><a href="services.html" class="block py-3 px-4 rounded-xl text-base text-slate-700">Services</a><a href="doctors.html" class="block py-3 px-4 rounded-xl text-base text-slate-700">Doctors</a><a href="about.html" class="block py-3 px-4 rounded-xl text-base text-slate-700">About</a><a href="contact.html" class="block py-3 px-4 rounded-xl text-base text-slate-700">Contact</a></nav>
+        <div class="mt-3 flex flex-col gap-2 px-1"><a href="patient-login.html" class="text-center border border-slate-200 rounded-2xl py-2.5 text-sm font-medium text-slate-700">Patient Login</a><a href="book.html" class="text-center bg-sky-500 text-white rounded-2xl py-2.5 text-sm font-semibold">Book Appointment</a></div></div>
+    </header></div>
 
 <main id="main">
   <!-- HERO -->
@@ -156,7 +166,7 @@
       <h2 class="text-3xl sm:text-4xl font-extrabold text-ink tracking-tight">Technology and care you can see</h2>
       <p class="mt-4 text-slate-600">A look at the diagnostics, treatment rooms and optical studio patients visit every day.</p>
     </div>
-    <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] sm:auto-rows-[180px] gap-3 sm:gap-4"></div>
+    <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 grid-flow-dense auto-rows-[140px] sm:auto-rows-[180px] gap-3 sm:gap-4"></div>
   </section>
 
   <!-- LEAD DOCTOR -->
@@ -217,13 +227,16 @@
   </section>
 </main>
 
-<div id="site-footer"></div>
+<div id="site-footer"><footer class="bg-sky-50 border-t border-sky-100 text-slate-600 mt-24"><div class="max-w-7xl mx-auto px-5 sm:px-8 py-12 grid gap-8 md:grid-cols-3">
+      <div><p class="font-semibold text-ink mb-2">Emagon Eye Clinic</p><p class="text-sm text-slate-500">Premium, modern eye care in the heart of Abuja.</p></div>
+      <div><p class="font-semibold text-ink text-sm mb-3">Explore</p><ul class="space-y-2 text-sm"><li><a href="services.html">Services</a></li><li><a href="doctors.html">Our Doctors</a></li><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="book.html">Book an Appointment</a></li></ul></div>
+      <div><p class="font-semibold text-ink text-sm mb-3">Visit Us</p><ul class="space-y-2 text-sm"><li>Plot 14, Gana Street, Maitama, Abuja</li><li>Mon–Sat, 8:00 AM – 7:00 PM</li><li>0800 123 4567</li></ul></div></div>
+      <div class="border-t border-sky-100 text-xs text-slate-500"><div class="max-w-7xl mx-auto px-5 sm:px-8 py-5 flex justify-between"><span>&copy; Emagon Eye Clinic, Abuja</span><span><a href="doctor-login.html">Staff Login</a> &middot; <a href="admin-login.html">Admin Login</a></span></div></div></footer></div>
 
 <script src="app.js"></script>
 <script src="components.js"></script>
 <script>
-  UI.renderPublicHeader('index');
-  UI.renderPublicFooter();
+  if (typeof UI !== 'undefined') { UI.renderPublicHeader('index'); UI.renderPublicFooter(); }
 
   const shots = [
     ['phoropter','Eye exam with a phoropter',1000,'col-span-2 row-span-2'],
@@ -237,10 +250,10 @@
     ['glassesCase','Prescription glasses',600,''],
     ['eyeGreen','Macro of a green iris',600,'']
   ];
-  document.getElementById('gallery').innerHTML = shots.map(([k,alt,w,c]) => `<div class="photo rounded-3xl bg-sky-100 shadow-card ${c}">${IMG.tag(k,alt,w,'hover:scale-105 transition-transform duration-500')}</div>`).join('');
+  document.getElementById('gallery').innerHTML = shots.map(([k,alt,w,c]) => `<div class="photo rounded-3xl bg-sky-100 shadow-card flex items-center justify-center ${c}"><i data-lucide="eye" class="text-sky-300" style="width:36px;height:36px"></i>${IMG.tag(k,alt,w,'hover:scale-105 transition-transform duration-500')}</div>`).join('');
 
   const grid = document.getElementById('home-services-grid');
-  EMAGON.Services.all().slice(0, 4).forEach(s => {
+  (typeof EMAGON !== 'undefined' ? EMAGON.Services.all() : []).slice(0, 4).forEach(s => {
     const card = document.createElement('div');
     card.className = 'rounded-3xl border border-slate-100 bg-white shadow-card p-4 pb-6 hover:-translate-y-1 transition-transform';
     card.innerHTML = `
@@ -250,7 +263,7 @@
       <p class="text-sm font-semibold text-sky-600 mt-4">From ${EMAGON.formatCurrency(s.price)}</p>`;
     grid.appendChild(card);
   });
-  EMAGON.initIcons();
+  if (typeof EMAGON !== 'undefined') EMAGON.initIcons();
 </script>
 </body>
 </html>
